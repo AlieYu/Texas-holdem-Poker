@@ -3,6 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
 using namespace std;
 
 typedef vector<string> VecStr;
@@ -30,7 +34,7 @@ extern const int  g_jetton;
 //初始金币
 extern const int g_Money;
 //战神 
-extern class Player& Ares; 
+extern class Player* Ares; 
 
 
 //花色
@@ -54,7 +58,7 @@ public:
 
 //动作
 enum Action{
-	NoAction=0,Check=1,Call,Raise,AllIn,Fold //让牌 跟注 加注 全押 弃牌，NoAction表示还未决定状态
+	NoAction=0,Blind=1,Check,Call,Raise,AllIn,Fold //让牌 跟注 加注 全押 弃牌，NoAction表示还未决定状态
 };
 
 
@@ -86,7 +90,7 @@ enum GameTurn{
 };
 
 /*当前牌型(最高)（由底牌 和 已有公共牌的得出）有5 或6 或7 张牌*/
-extern CT_Value GetCT_Value(Card* cards,int num);
+//extern CT_Value GetCT_Value(Card* cards,int num);
 
 //声明两个全局函数
 Card* GetPubCards();
@@ -96,21 +100,11 @@ int GetCardsNum();
 //牌手
 class Player{
 public:
-	Player():seat(-1),CurrPot(0),TotalPot(0),jetton(0),ReMoney(0),CurrAction(NoAction),
-		     isContinue(true),name(NULL){   }
+	Player():pid(0),seat(-1),CurrPot(0),TotalPot(0),jetton(0),ReMoney(0),CurrAction(NoAction),
+		isContinue(true),CurrTotal(0){   }
 	
-	CT_Value GetBestCTV(){
-		Card* cds=new Card[7];
-		cds[0]=HoldCards[0];
-		cds[1]=HoldCards[1];
-		for(int i=0;i<5;++i)
-		{
-			cds[i+2]=GetPubCards()[i];
-		}
-		this->ctv=GetCT_Value(cds, GetCardsNum());
-		delete[] cds;
-		return this->ctv;
-	}						//获取当前最佳牌型	(5 6 7张牌)
+	 CT_Value GetBestCTV(); //获取当前最佳牌型	(5 6 7张牌)
+	 void Inition();   //状态初始化
 	int GetSeat(){return seat;}					//获取作为信息
 	int GetTotalPot(){return TotalPot;}			//获取本局累计已投注额
 	int Getjetton(){return jetton;}				//获取当前彩池总额
@@ -125,34 +119,37 @@ public:
 	//策略函数3
 
 public:
-	int pid;			//玩家标识
-	char* name;			
+	int pid;			//玩家标识	
 	int seat;			//座位编号（以庄家的相对位置）
-	int CurrPot;		//当前需要的下注额
+	int CurrPot;		//当前最小需要的下注额
+	int CurrTotal;      //用于记录Ares当前发牌圈已经投入的总额
 	int TotalPot;		//本局累计已投注额
 	int jetton;			//手中筹码
-	int ReMoney;		//剩余金币数量
 
+	int ReMoney;		//剩余金币数量
 	Card HoldCards[2];	//手牌
 	vector<int> actions;//保存已发生的每一次的行动决策
 	int CurrAction;		//最近（当前）一次action
 	bool isContinue;    //标记玩家是否已退出程序,如果已退出，则不再更新其成员消息
 	CT_Value ctv;		//当前最佳牌型
+
 };
 
 //牌局
 class Game{
 public:
-	Game():players(g_PlayerNum),TotalMoney(0),turn(PreHold),RaisePlayer(0),
-		  GameOver(false){
-		//PubCard=new Card[5];
+	Game():players(0),players_alive(0),TotalMoney(0),turn(PreHold),RaisePlayer(0),
+		GameOver(false),FirstInq(0),JuShu(0),BlindsNum(0),TurnBegin(0){
 		AllPlayers=new Player[8];
+		for(int i=0;i<8;++i)
+			LastTotalPot[i]=0;
 	}
 	~Game(){ 
 		delete[] PubCard;
 		delete[] AllPlayers;
 	}
 
+   void Inition();   //状态初始化
 	Player* GetAllPlalyers(){return AllPlayers;}
 	Card* GetPubCards() {return PubCard;}
 	int GetPlayers(){return players;}
@@ -162,26 +159,42 @@ public:
 	int GetCardsNum() {return CardsNum;}
 	bool GetGameOver(){return GameOver;}
 	int GetBlindNum(){return BlindsNum;}
+	int GetJuShu() {return JuShu;}
 
 public:
 	Player* AllPlayers;  //所有玩家
 	static Card* PubCard;		//公共牌
-	int players;		//当前玩家人数
+	int players;		//当前局玩家人数
+    int players_alive;  //当前未弃牌玩家数
 	int TotalMoney;		//当前底池总量
 	int turn;			//当前牌局进展（如翻牌前  翻牌圈 转牌圈 河牌圈）
 	int RaisePlayer;    //当前圈加注人数
 	static int CardsNum;		//底牌+已发公共牌数量
-	bool GameOver;		//游戏结束标志
+	bool GameOver;		//本局游戏结束标志
 	int BlindsNum;          //小盲注金额
+	int FirstInq; 	//标记第一条询问消息
+	int JuShu;		//参加过的总局数
+	int TurnBegin;		//标记每次发牌后的第一圈询问的起点
+	int LastTotalPot[8];//用于供Ares记录上一次询问消息提供的所有玩家本局的总投注额
+	
 };
 
 
-
-
+//调试输出函数
+void PrintPlayer(const Player& p);
+void PrintGame(const Game& g);
 /**********************************************
 全局 消息设置函数
 *********************************************/
+//将消息中的J Q K A转换为11 12  13 14
+ int StrToPoint(const string& c);
+ //将消息中的花色转换为color
+ int StrToColor(const string& c);
+ //将action 转换为int
+int StrToAction(const string& c);
 
+
+int FindMaxPot(int beg,int end);
 //字符串拆分函数：将s按c拆分，每个字段存到lstr_vec
 void split(const string& s, char c, VecStr& Vec);
 //传入消息串，将其按字段拆分
@@ -212,7 +225,7 @@ string Set_ActionMsg(int action,int raisenum=0);
 string Set_RegMsg(int id,char* Name);
 
 //消息处理调用接口函数
-bool Set_Msg(const char *buf );
+bool Set_Msg(const char *buf ,int socket);
 
 
 #endif

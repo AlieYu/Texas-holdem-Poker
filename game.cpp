@@ -119,19 +119,39 @@ Card isFourOne(Card* cards,int beg,int end)
 //是否为三带二
 Card isThreeTwo(Card* cards,int beg,int end)
 {
-	if(cards[beg].point==cards[beg+2].point && cards[end-1].point==cards[end].point)
+	if(end-beg >=4)
 	{
-		isType[ctThreeTwo]=1;
-		return cards[beg];
-	}
-	if(cards[beg+2].point==cards[end].point && cards[beg].point==cards[beg+1].point)
-	{
-		isType[ctThreeTwo]=1;
-		return cards[end];
+		for (;beg<3;beg++)
+		{
+			if (cards[beg].point == cards[beg+1].point && cards[beg].point == cards[beg+2].point)
+			{
+				int i= beg+3;
+				for (;i<end;i++)
+				{
+					if (cards[i].point == cards[i+1].point)
+					{
+							isType[ctThreeTwo]=1;
+							return cards[beg];
+
+					}
+				}
+			} 
+			else if (cards[beg].point == cards[beg+1].point && cards[beg].point != cards[beg+2].point)
+			{
+				int i = beg+2;
+				for (;i<end-1;i++)
+				{
+					if (cards[i].point == cards[i+1].point && cards[i].point == cards[i+2].point)
+					{
+						isType[ctThreeTwo]=1;
+						return cards[beg];
+					}
+				}
+			}						
+		}		
 	}
 	isType[ctThreeTwo]=0;
-	return cards[end];
-	
+	return cards[end];	
 }
 
 
@@ -153,17 +173,28 @@ Card isFlush(Card* cards,int beg,int end)
 //是否为顺子
 Card  isStraight(Card* cards,int beg,int end)
 {
-	for(int i=beg;i<end;++i)
+	int Dvalue=0;
+	int p=end;
+	for(;beg!=end;++beg)
 	{
-		if(cards[i].point+1 != cards[i+1].point)
+		if(cards[beg].point+1 == cards[beg+1].point)
 		{
-			isType[ctStraight]=0;
-			return cards[end];
+			Dvalue++;
+			p=beg+1;
+		}
+		else  if(cards[beg].point < cards[beg+1].point-1  )
+		{
+			p=beg+1;
+			Dvalue=0;
 		}
 	} 
-	isType[ctStraight]=1;
-	return cards[end];
-	
+	if (Dvalue>=4)
+	{
+		isType[ctStraight]=1;
+		return cards[p];
+	}
+	isType[ctStraight]=0;
+	return cards[end];	
 }
 
 //是否为三条
@@ -187,24 +218,25 @@ Card isThreeCard(Card* cards,int beg ,int end)
 Card isTwoPair(Card* cards,int beg,int end)
 {
 	isType[ctTwoPair]=0;
-	if(cards[beg].point==cards[beg+1].point && cards[beg+2].point==cards[beg+3].point)
+	int p=end;
+	if(end-beg>=4)
 	{
-		isType[ctTwoPair]=1;
-		return cards[beg+3];
+		int pair=0;
+		for (;beg<end;beg++)
+		{
+			if (cards[beg].point == cards[beg+1].point)
+			{
+				pair++;
+				beg+=1;
+				p=beg;
+			}
+		}
+		if (pair>1)
+		{
+			isType[ctTwoPair]=1;
+			return cards[p];
+		}
 	}
-		
-	if(cards[beg].point==cards[beg+1].point && cards[beg+3].point==cards[end].point)
-	{
-		isType[ctTwoPair]=1;
-		return cards[end];
-	}
-		
-	if(cards[beg+1].point==cards[beg+2].point && cards[beg+3].point==cards[end].point)
-	{
-		isType[ctTwoPair]=1;
-		return cards[end];
-	}
-		
 	isType[ctTwoPair]=0; 
 	return cards[end];
 }
@@ -267,7 +299,18 @@ CT_Value GetCT_Value(Card* cards,int num)
 			return ctv;
 		}
 	}
-  //是否为四条
+	//是否为同花
+	for(int i=num;i>=5;--i)
+	{
+		card=isFlush(cards,i-5,i-1);
+		if(isType[ctFlush]==1)
+		{
+			ctv.value=card;
+			ctv.type=ctFlush;
+			return ctv;
+		}
+	}
+	//是否为四条
 	sort(cards,cards+num,comp_point);
 	for(int i=num;i>=5;--i)
 	{
@@ -279,45 +322,27 @@ CT_Value GetCT_Value(Card* cards,int num)
 			return ctv;
 		}
 	}
+
 	//是否为三代二
-	sort(cards,cards+num,comp_point);
-	for(int i=num;i>=5;--i)
+	card=isThreeTwo(cards,0,num-1);
+	if(isType[ctThreeTwo]==1)
 	{
-		card=isThreeTwo(cards,i-5,i-1);
-		if(isType[ctThreeTwo]==1)
-		{
-			ctv.value=card;
-			ctv.type=ctThreeTwo;
-			return ctv;
-		}
+		ctv.value=card;
+		ctv.type=ctThreeTwo;
+		return ctv;
 	}
-	//是否为同花
-	CPSort(cards,cards+num);
-	for(int i=num;i>=5;--i)
-	{
-		card=isFlush(cards,i-5,i-1);
-		if(isType[ctFlush]==1)
-		{
-			ctv.value=card;
-			ctv.type=ctFlush;
-			return ctv;
-		}
-	}
+
+	
 	//是否为顺子
-	sort(cards,cards+num,comp_point);
-	for(int i=num;i>=5;--i)
+	card=isStraight(cards,0,num-1);
+	if(isType[ctStraight]==1)
 	{
-		card=isStraight(cards,i-5,i-1);
-		if(isType[ctStraight]==1)
-		{
-			ctv.value=card;
-			ctv.type=ctStraight;
-			return ctv;
-		}
+		ctv.value=card;
+		ctv.type=ctStraight;
+		return ctv;
 	}
 		
 	//是否为三条
-	sort(cards,cards+num,comp_point);
 	for(int i=num;i>=5;--i)
 	{
 		card=isThreeCard(cards,i-5,i-1);
@@ -330,19 +355,14 @@ CT_Value GetCT_Value(Card* cards,int num)
 	}
 		
 	//是否为两对
-	sort(cards,cards+num,comp_point);
-	for(int i=num;i>=5;--i)
+	card=isTwoPair(cards,0,num-1);
+	if(isType[ctTwoPair]==1)
 	{
-		card=isTwoPair(cards,i-5,-1);
-		if(isType[ctTwoPair]==1)
-		{
-			ctv.value=card;
-			ctv.type=ctTwoPair;
-			return ctv;
-		}
+		ctv.value=card;
+		ctv.type=ctTwoPair;
+		return ctv;
 	}
 	//是否为一对
-	sort(cards,cards+num,comp_point);
 	for(int i=num;i>=5;--i)
 	{
 		card=isOnePair(cards,i-5,i-1);
@@ -354,7 +374,6 @@ CT_Value GetCT_Value(Card* cards,int num)
 		}
 	}
 	//是否为高牌
-	sort(cards,cards+num,comp_point);
 	for(int i=num;i>=5;--i)
 	{
 		card=isHighCard(cards,i-5,i-1);
@@ -365,9 +384,9 @@ CT_Value GetCT_Value(Card* cards,int num)
 			return ctv;
 		}
 	}
+	//正常 不会运行到这里
+	return ctv;
 }
-
-
 
 
 
