@@ -105,14 +105,14 @@ public:
 	 ~Player();
 	 CT_Value GetBestCTV(); //获取当前最佳牌型	(5 6 7张牌)
 	 void Inition();   //状态初始化
-	int GetSeat(){return seat;}					//获取作为信息
-	int GetTotalPot(){return TotalPot;}			//获取本局累计已投注额
-	int Getjetton(){return jetton;}				//获取当前彩池总额
-	int GetRemony(){return ReMoney;}			//获取剩余金币数量
-	Card* GetHoldCs(){return HoldCards;}		//获取手牌
-	vector<int> GetActions(){return actions;}	//获取历史action记录
-	int GetCurrAction(){return CurrAction;}		//获取最近一次action
-	bool GetisContinue(){return isContinue;}	//获取牌局是否还在继续
+	 int GetSeat() const {return seat;}				//获取作为信息
+	int GetTotalPot() const {return TotalPot;}		//获取本局累计已投注额
+	int Getjetton()const {return jetton;}			//获取当前彩池总额
+	int GetRemony() const {return ReMoney;}		//获取剩余金币数量
+	const Card* GetHoldCs() const {return HoldCards;}	//获取手牌
+	const vector<int>& GetActions() const {return actions;}	//获取历史action记录
+	int GetCurrAction()const {return CurrAction;}		//获取最近一次action
+	bool GetisContinue()const {return isContinue;}	//获取牌局是否还在继续
 
 	//策略函数1
 	//策略函数2
@@ -145,16 +145,16 @@ public:
 	}
 
       void Inition();   //状态初始化
-	Player* GetAllPlalyers(){return AllPlayers;}
-	Card* GetPubCards() {return PubCard;}
-	int GetPlayers(){return players;}
-	int GetTotalMoney(){return TotalMoney;}
-	int GetTurn(){return turn;}
-	int GetRaisePlayers(){return RaisePlayer;}
-	int GetCardsNum() {return CardsNum;}
-	bool GetGameOver(){return GameOver;}
-	int GetBlindNum(){return BlindsNum;}
-	int GetJuShu() {return JuShu;}
+	const Player* GetAllPlalyers()const {return AllPlayers;}
+	const Card* GetPubCards() const {return PubCard;}
+	int GetPlayers()const {return players;}
+	int GetTotalMoney() const {return TotalMoney;}
+	int GetTurn() const {return turn;}
+	int GetRaisePlayers() const {return RaisePlayer;}
+	int GetCardsNum() const {return CardsNum;}
+	bool GetGameOver() const {return GameOver;}
+	int GetBlindNum() const {return BlindsNum;}
+	int GetJuShu() cosnt {return JuShu;}
 
 private:
 	Player* AllPlayers;  //所有玩家
