@@ -5,47 +5,53 @@
 
 
 /********************************
-È«¾Ö±äÁ¿
+å…¨å±€å˜é‡
 *********************************/
-//´æ·ÅÕûÌõÏûÏ¢
+//å­˜æ”¾æ•´æ¡æ¶ˆæ¯
 char* msgbuff;
-//´æ·Å½«ÕûÌõÏûÏ¢²ğ·ÖµÄ½á¹û
+//å­˜æ”¾å°†æ•´æ¡æ¶ˆæ¯æ‹†åˆ†çš„ç»“æœ
 VecStr g_MsgVec;
-//ÅÆ¾Ö
+//ç‰Œå±€
 Game g_game;
 
 
 /*****************************************************
-ÎÒÊÇÕ½ÉñAres
+æˆ‘æ˜¯æˆ˜ç¥Ares
 ********************************************************/
 //pid
 int g_Pid;
 //name
 char* g_name;
-//Õ½ÉñµÄ×ùÎ»ºÅ
+//æˆ˜ç¥çš„åº§ä½å·
 int g_Seat;
-//Ó®ÅÆ¾ÖÊı
+//èµ¢ç‰Œå±€æ•°
 int g_WinTimes=0;
-//³õÊ¼³ïÂë
+//åˆå§‹ç­¹ç 
 const int  g_jetton=1000;
-//³õÊ¼½ğ±Ò
+//åˆå§‹é‡‘å¸
 const int g_Money=1000;
-//Õ½Éñ 
+//æˆ˜ç¥ 
 class Player* Ares;//=g_game.AllPlayers[g_Seat]; 
-//¼ÇÂ¼±¾¾Öµ±Ç°·¢ÅÆÈ¦¿ªÊ¼Ê±AresÒÑ¾­Í¶ÈëµÄ×Ü¶î
+//è®°å½•æœ¬å±€å½“å‰å‘ç‰Œåœˆå¼€å§‹æ—¶Areså·²ç»æŠ•å…¥çš„æ€»é¢
 int g_TempPot=0;
 
 
 
 /************************************************
-GameµÄ¾²Ì¬³ÉÔ±±äÁ¿   ³ÉÔ±º¯Êı
+Gameçš„é™æ€æˆå‘˜å˜é‡   æˆå‘˜å‡½æ•°
 *****************************************/
 int Game::CardsNum=0;
 Card* Game::PubCard=new Card[5];
 
+Player::Player()
+{
+		AllPlayers=new Player[8];
+		for(int i=0;i<8;++i)
+			LastTotalPot[i]=0;
+	}
  void Player::Inition()
  {
-	 //ÊÖÅÆ
+	 //æ‰‹ç‰Œ
 HoldCards[0].color=NoColor;
 HoldCards[0].point=p0;
 HoldCards[1].color=NoColor;
@@ -62,20 +68,20 @@ HoldCards[1].point=p0;
  }
  void Game::Inition()
  {
-	 //JuShu²»ÇåÁã
+	 //JuShuä¸æ¸…é›¶
 	g_game.FirstInq=0;
 	players=0;
 	players_alive=0;
 	TotalMoney=0;
 	turn=PreHold;
 	TurnBegin=0;
-	//¹«¹²ÅÆ
+	//å…¬å…±ç‰Œ
 	for(int i=0;i<5;++i)
 	{
 		PubCard[i].color=NoColor;
 		PubCard[i].point=p0;
 	}
-	//Ã¤×¢
+	//ç›²æ³¨
 	BlindsNum=0;
 	RaisePlayer=0;
 	CardsNum=0;
@@ -99,10 +105,10 @@ CT_Value Player::GetBestCTV()
 		this->ctv=GetCT_Value(cds, GetCardsNum());
 		delete[] cds;
 		return this->ctv;
-	}						//»ñÈ¡µ±Ç°×î¼ÑÅÆĞÍ	(5 6 7ÕÅÅÆ)
+	}						//è·å–å½“å‰æœ€ä½³ç‰Œå‹	(5 6 7å¼ ç‰Œ)
 
 
-//µ÷ÊÔÊä³öº¯Êı
+//è°ƒè¯•è¾“å‡ºå‡½æ•°
 void PrintPlayer(const Player& p)
 {
 	cout<<"Player: "<<"pid:"<<p.pid<<" "<<"seat:"<<p.seat<<" "<<"jetton:"<<p.jetton
@@ -147,16 +153,16 @@ int FindMaxPot(int beg,int end)
 	return max;
 }
 /******************************************************
-È«¾Öº¯Êı ¸¨Öúº¯Êı
+å…¨å±€å‡½æ•° è¾…åŠ©å‡½æ•°
 ****************************************************/
 
-//»ñÈ¡¹«¹²ÅÆµÄÈ«¾Öº¯Êı
+//è·å–å…¬å…±ç‰Œçš„å…¨å±€å‡½æ•°
 Card* GetPubCards() {return Game::PubCard;}
-//»ñÈ¡µ×ÅÆ+¹«¹²ÅÆÊıÁ¿
+//è·å–åº•ç‰Œ+å…¬å…±ç‰Œæ•°é‡
 int GetCardsNum() {return Game::CardsNum;}
 
 
-//×Ö·û´®²ğ·Öº¯Êı£º½«s°´c²ğ·Ö£¬Ã¿¸ö×Ö¶Î´æµ½lstr_vec
+//å­—ç¬¦ä¸²æ‹†åˆ†å‡½æ•°ï¼šå°†sæŒ‰cæ‹†åˆ†ï¼Œæ¯ä¸ªå­—æ®µå­˜åˆ°lstr_vec
 void split(const string& s, char c, VecStr& v)
 {
  string::size_type i = 0;
@@ -184,7 +190,7 @@ void split(const string& s, char c, VecStr& v)
 }
 }
 
-//´«ÈëÏûÏ¢´®£¬½«Æä°´×Ö¶Î²ğ·Ö
+//ä¼ å…¥æ¶ˆæ¯ä¸²ï¼Œå°†å…¶æŒ‰å­—æ®µæ‹†åˆ†
 void SplitMsg(const char* buffer, VecStr& g_MsgVec)
 {
 g_MsgVec.clear();
@@ -196,7 +202,7 @@ for (int i = 0; i < tempVec.size(); ++i)
   split(tempVec[i], ' ', g_MsgVec);
  }
 }
-//½«pidÓ³ÉäÎªÍæ¼ÒµÄ×ùÎ»ºÅ
+//å°†pidæ˜ å°„ä¸ºç©å®¶çš„åº§ä½å·
 int GetSeatNum(int pid)
 {
 	for(int i=0;i<8;++i)
@@ -205,7 +211,7 @@ int GetSeatNum(int pid)
 	return -1;
 }
 
-//½«2-9  J Q K A×ª»»Îªp0 - p14
+//å°†2-9  J Q K Aè½¬æ¢ä¸ºp0 - p14
  int StrToPoint(const string& c)
  {
 	int point=0;
@@ -221,7 +227,7 @@ int GetSeatNum(int pid)
   return point;
 
  }
- //½«»¨É«×ª»»Îªint
+ //å°†èŠ±è‰²è½¬æ¢ä¸ºint
 int StrToColor(const string& c)
 {
 	
@@ -238,7 +244,7 @@ int StrToColor(const string& c)
 	  color=NoColor;
   return color;
 }
-//½«action ×ª»»Îªint
+//å°†action è½¬æ¢ä¸ºint
 int StrToAction(const string& c)
 {
 	int action=NoAction;
@@ -259,7 +265,7 @@ int StrToAction(const string& c)
 
 
  /*******************************************
-È«¾Öº¯Êı£º·şÎñÆ÷ÏûÏ¢´¦Àíº¯Êı   
+å…¨å±€å‡½æ•°ï¼šæœåŠ¡å™¨æ¶ˆæ¯å¤„ç†å‡½æ•°   
 ************************************************/
 bool Set_SeatMsg(const VecStr& msg)
 {
@@ -267,17 +273,17 @@ bool Set_SeatMsg(const VecStr& msg)
 		return false;
 	int index=2;
 	int length=msg.size();
-	//Íæ¼Ò ¸öÊıĞèÒªÅĞ¶Ï
+	//ç©å®¶ ä¸ªæ•°éœ€è¦åˆ¤æ–­
 	if(length<11)
 	{
 		g_game.players=1;
 		return false;
 	}
-	else if(length==11)//Ö»Ê£×¯¼Ò ºÍĞ¡Ã¤×¢Á½¸öÍæ¼Ò
+	else if(length==11)//åªå‰©åº„å®¶ å’Œå°ç›²æ³¨ä¸¤ä¸ªç©å®¶
 		g_game.players=2;
-	else //ÖÁÉÙÓĞÈı¸öÍæ¼Ò
+	else //è‡³å°‘æœ‰ä¸‰ä¸ªç©å®¶
 		g_game.players=3+(length-16)/3;
-	//³õÊ¼»¯µ±Ç°Î´ÆúÅÆÍæ¼ÒÊı
+	//åˆå§‹åŒ–å½“å‰æœªå¼ƒç‰Œç©å®¶æ•°
 	g_game.players_alive=g_game.players;
 	
 	g_game.AllPlayers[0].seat=0;
@@ -300,13 +306,13 @@ bool Set_SeatMsg(const VecStr& msg)
 	g_game.AllPlayers[i].ReMoney=atoi(msg[++index].c_str());
 	}
 
-	//¸ù¾İÎÒµÄPidÉèÖÃ×ùÎ»ºÅ
+	//æ ¹æ®æˆ‘çš„Pidè®¾ç½®åº§ä½å·
 	for(int i=0;i<g_game.players;++i)
 		if(g_game.AllPlayers[i].pid==g_Pid)
 			{
 				g_Seat=g_game.AllPlayers[i].seat;
 				Ares=&(g_game.AllPlayers[g_Seat]);
-				++g_game.JuShu;//Ares²Î¼Ó¹ıµÄ¾ÖÊı
+				++g_game.JuShu;//Areså‚åŠ è¿‡çš„å±€æ•°
 			}
 
 	return true;
@@ -316,7 +322,7 @@ bool Set_BlindMsg(const VecStr& msg)
 
 	if(msg[0]!="blind/" || *(msg.end()-1)!="/blind")
 		return false;
-	//´óÓÚÁ½¸öÍæ¼Ò
+	//å¤§äºä¸¤ä¸ªç©å®¶
 	if(g_game.players>2)
 	{
 	g_game.BlindsNum=atoi(msg[2].c_str());
@@ -327,7 +333,7 @@ bool Set_BlindMsg(const VecStr& msg)
 	g_game.TotalMoney=3*g_game.BlindsNum;
 	return true;
 	}
-	//Ö»ÓĞÁ½¸öÍæ¼Ò
+	//åªæœ‰ä¸¤ä¸ªç©å®¶
 	if(g_game.players==2)
 	{
 	g_game.BlindsNum=atoi(msg[2].c_str());
@@ -351,7 +357,7 @@ bool Set_HoldCsMsg(const VecStr& msg)
 	Ares->CurrTotal=0;
 	g_game.turn=Hold;
 	g_game.CardsNum=2;
-	g_game.TurnBegin=1;//¿ªÊ¼½øÈëÊÖÅÆÈ¦
+	g_game.TurnBegin=1;//å¼€å§‹è¿›å…¥æ‰‹ç‰Œåœˆ
 
 	return true;
 }
@@ -366,52 +372,52 @@ bool Set_InquireMsg(const VecStr& msg)
  int end=g_Seat-g_game.players;
  int beg=g_Seat-1;
 
- //Ñ¯ÎÊÏûÏ¢µÄÌõÊı¸ù¾İplayersµÄÍæ¼ÒÊıÒ»Ñù
+ //è¯¢é—®æ¶ˆæ¯çš„æ¡æ•°æ ¹æ®playersçš„ç©å®¶æ•°ä¸€æ ·
  for(int i=beg;i>=end;--i)
  {
-	if(i>=0)//´ÓÎÒµÄÉÏ¼ÒÄæÊ±Õëµ½×¯¼Ò
+	if(i>=0)//ä»æˆ‘çš„ä¸Šå®¶é€†æ—¶é’ˆåˆ°åº„å®¶
 	{
 	
 			++Index;
 			g_game.AllPlayers[i].jetton=atoi(msg[++Index].c_str());
 			g_game.AllPlayers[i].ReMoney=atoi(msg[++Index].c_str());
-			//¼ÇÂ¼¸ÃÍæ¼ÒÉÏ´ÎµÄ×ÜÍ¶×¢¶î
+			//è®°å½•è¯¥ç©å®¶ä¸Šæ¬¡çš„æ€»æŠ•æ³¨é¢
 			g_game.LastTotalPot[i]=g_game.AllPlayers[i].TotalPot;
 			g_game.AllPlayers[i].TotalPot=atoi(msg[++Index].c_str());
 			g_game.AllPlayers[i].CurrAction=StrToAction(msg[++Index]);
 		
-			g_game.AllPlayers[i].actions.push_back(g_game.AllPlayers[i].CurrAction);//¼ÇÂ¼Íæ¼ÒµÄÃ¿´Î¾ö²ß½á¹û
-			if(g_game.AllPlayers[i].CurrAction==Fold)//Íæ¼ÒÆúÅÆ
+			g_game.AllPlayers[i].actions.push_back(g_game.AllPlayers[i].CurrAction);//è®°å½•ç©å®¶çš„æ¯æ¬¡å†³ç­–ç»“æœ
+			if(g_game.AllPlayers[i].CurrAction==Fold)//ç©å®¶å¼ƒç‰Œ
 				{
 					g_game.AllPlayers[i].isContinue=false;
 					--g_game.players_alive;
 				}
 
-		if(g_game.FirstInq==1 && i==1 && g_Seat!=2)//µÚÒ»ÌõÑ¯ÎÊÏûÏ¢ Ö»°üº¬µ½Ğ¡Ã¤×¢ÎªÖ¹(µ«´óÃ¤×¢ĞèÒªÄæÊ±Õë´©¹ıĞ¡Ã¤×¢»Øµ½×Ô¼º)
+		if(g_game.FirstInq==1 && i==1 && g_Seat!=2)//ç¬¬ä¸€æ¡è¯¢é—®æ¶ˆæ¯ åªåŒ…å«åˆ°å°ç›²æ³¨ä¸ºæ­¢(ä½†å¤§ç›²æ³¨éœ€è¦é€†æ—¶é’ˆç©¿è¿‡å°ç›²æ³¨å›åˆ°è‡ªå·±)
 			break;
 	
 	}
-	else if(i<0) //×¯¼ÒÄæÊ±Õëµ½ÎÒ
+	else if(i<0) //åº„å®¶é€†æ—¶é’ˆåˆ°æˆ‘
 	{
 		int j=g_game.players+i;
-		if(g_game.FirstInq==1 && g_Seat==0 && j==0)  //AresÊÇ×¯¼Ò
+		if(g_game.FirstInq==1 && g_Seat==0 && j==0)  //Aresæ˜¯åº„å®¶
 			break;
 
 			++Index;
 			g_game.AllPlayers[j].jetton=atoi(msg[++Index].c_str());
 			g_game.AllPlayers[j].ReMoney=atoi(msg[++Index].c_str());
-			//¼ÇÂ¼¸ÃÍæ¼ÒÉÏ´ÎµÄ×ÜÍ¶×¢¶î
+			//è®°å½•è¯¥ç©å®¶ä¸Šæ¬¡çš„æ€»æŠ•æ³¨é¢
 			g_game.LastTotalPot[j]=g_game.AllPlayers[j].TotalPot;
 			g_game.AllPlayers[j].TotalPot=atoi(msg[++Index].c_str());
 			g_game.AllPlayers[j].CurrAction=StrToAction(msg[++Index]);
-			g_game.AllPlayers[j].actions.push_back(g_game.AllPlayers[j].CurrAction);//¼ÇÂ¼Íæ¼ÒµÄÃ¿´Î¾ö²ß½á¹û
-			if(g_game.AllPlayers[j].CurrAction==Fold)//Íæ¼ÒÆúÅÆ
+			g_game.AllPlayers[j].actions.push_back(g_game.AllPlayers[j].CurrAction);//è®°å½•ç©å®¶çš„æ¯æ¬¡å†³ç­–ç»“æœ
+			if(g_game.AllPlayers[j].CurrAction==Fold)//ç©å®¶å¼ƒç‰Œ
 				g_game.AllPlayers[j].isContinue=false;
 	
 	}	
  }
   g_game.TotalMoney=atoi(msg[Index+3].c_str());	
-  //¼ÆËãAresµ±Ç°·¢ÅÆÈ¦ÒÑ¾­Í¶ÈëµÄ×Ü¶î
+  //è®¡ç®—Areså½“å‰å‘ç‰Œåœˆå·²ç»æŠ•å…¥çš„æ€»é¢
   if(g_game.TurnBegin==1)
   {
    Ares->CurrTotal=0;
@@ -421,18 +427,18 @@ bool Set_InquireMsg(const VecStr& msg)
   {
 	  Ares->CurrTotal=Ares->TotalPot-g_TempPot;
   }
- //¼ÆËãAres±¾ÂÖĞèÒªµÄ×îĞ¡Í¶×¢¶î
+ //è®¡ç®—Aresæœ¬è½®éœ€è¦çš„æœ€å°æŠ•æ³¨é¢
  int temp=0;
  //Ares->CurrPot=temp;
- if(g_game.players==2 && g_game.TurnBegin==1 && g_game.turn==Hold && g_Seat==0)//Ö»ÓĞÁ½¸öÍæ¼Ò
+ if(g_game.players==2 && g_game.TurnBegin==1 && g_game.turn==Hold && g_Seat==0)//åªæœ‰ä¸¤ä¸ªç©å®¶
  {
-//	if(g_game.TurnBegin==1 && g_game.turn==Hold && g_Seat==0)//ĞÂÊÖÅÆÅÆÈ¦
+//	if(g_game.TurnBegin==1 && g_game.turn==Hold && g_Seat==0)//æ–°æ‰‹ç‰Œç‰Œåœˆ
 	//{
 		 g_game.TurnBegin=0;
 		temp=g_game.BlindsNum<<1;
 	//}
  }
- else //ÖÁÉÙÈı¸öÍæ¼Ò
+ else //è‡³å°‘ä¸‰ä¸ªç©å®¶
  {
 	 g_game.TurnBegin=0;
 	 int max=FindMaxPot(beg,end);
@@ -441,7 +447,7 @@ bool Set_InquireMsg(const VecStr& msg)
  }
  Ares->CurrPot=temp;
  /*
- if(g_game.TurnBegin!=1)//²»ÎªĞÂµÄ·¢ÅÆÈ¦
+ if(g_game.TurnBegin!=1)//ä¸ä¸ºæ–°çš„å‘ç‰Œåœˆ
  {
   for(int i=beg;i>=end;--i)
   {
@@ -458,17 +464,17 @@ bool Set_InquireMsg(const VecStr& msg)
 		}	 
   }
  }
- else//ÎªĞÂµÄ·¢ÅÆÈ¦
+ else//ä¸ºæ–°çš„å‘ç‰Œåœˆ
  {   
 	 g_game.TurnBegin=0;
 	 if(g_game.players>=3)
 	 {
-	  if(g_game.turn==Hold && g_Seat==3 )//AresÊÖÅÆÈ¦µÄ·¢»°Õß(2¸öÍæ¼ÒÒÔÉÏ)
+	  if(g_game.turn==Hold && g_Seat==3 )//Aresæ‰‹ç‰Œåœˆçš„å‘è¯è€…(2ä¸ªç©å®¶ä»¥ä¸Š)
 		 temp=g_game.BlindsNum<<1;
-	  else if(g_game.turn==Hold && g_Seat!=3 )//Ares²»ÊÇÊÖÅÆÈ¦µÄ·¢»°Õß
+	  else if(g_game.turn==Hold && g_Seat!=3 )//Aresä¸æ˜¯æ‰‹ç‰Œåœˆçš„å‘è¯è€…
 	  {
 		     int i=0;
-		      for(int i=beg;i>=end;--i)  //·ÇÊÖÅÆÈ¦±¾ÓÉĞ¡Ã¤×¢·¢»°
+		      for(int i=beg;i>=end;--i)  //éæ‰‹ç‰Œåœˆæœ¬ç”±å°ç›²æ³¨å‘è¯
 			  {
 				  int j=i;
 				  if(j<0)
@@ -478,19 +484,19 @@ bool Set_InquireMsg(const VecStr& msg)
 				  temp=g_game.AllPlayers[j].TotalPot-g_game.LastTotalPot[j];
 					  break;
 				 }
-			 if(j==3)//AresÇ°ÃæµÄÍæ¼Ò¶¼ÒÑ¾­ÆúÅÆ£¬ÓĞAres·¢»°(Õı³£²»»áÔËĞĞµ½ÕâÀï£¡£¡)
+			 if(j==3)//Areså‰é¢çš„ç©å®¶éƒ½å·²ç»å¼ƒç‰Œï¼Œæœ‰Areså‘è¯(æ­£å¸¸ä¸ä¼šè¿è¡Œåˆ°è¿™é‡Œï¼ï¼)
 				{
-					//cout<<"??????????????Õı³£²»»áÔËĞĞµ½ÕâÀï£¡£¡????????????"<<endl;
-				temp=g_game.BlindsNum<<1;  //ÖÁÉÙÎª2±¶Ğ¡Ã¤×¢£¿?
+					//cout<<"??????????????æ­£å¸¸ä¸ä¼šè¿è¡Œåˆ°è¿™é‡Œï¼ï¼????????????"<<endl;
+				temp=g_game.BlindsNum<<1;  //è‡³å°‘ä¸º2å€å°ç›²æ³¨ï¼Ÿ?
 				break;
 				}
 			 }
 	  }
-	  else if(g_game.turn!=Hold) 	//·ÇÊÖÅÆÈ¦£¬AresÊÇ·¢»°Õß
+	  else if(g_game.turn!=Hold) 	//éæ‰‹ç‰Œåœˆï¼ŒAresæ˜¯å‘è¯è€…
 		 {
 			
 			 int i=0;
-		     for(int i=beg;i>=end;--i)  //·ÇÊÖÅÆÈ¦±¾ÓÉĞ¡Ã¤×¢·¢»°
+		     for(int i=beg;i>=end;--i)  //éæ‰‹ç‰Œåœˆæœ¬ç”±å°ç›²æ³¨å‘è¯
 			 {
 				  int j=i;
 				  if(j<0)
@@ -500,15 +506,15 @@ bool Set_InquireMsg(const VecStr& msg)
 				  temp=g_game.AllPlayers[j].TotalPot-g_game.LastTotalPot[j];
 					  break;
 				 }
-				 if(j==1)//AresÇ°ÃæµÄÍæ¼Ò¶¼ÒÑ¾­ÆúÅÆ£¬ÓĞAres·¢»°
+				 if(j==1)//Areså‰é¢çš„ç©å®¶éƒ½å·²ç»å¼ƒç‰Œï¼Œæœ‰Areså‘è¯
 					{
-					temp=g_game.BlindsNum<<1;  //ÖÁÉÙÎª2±¶Ğ¡Ã¤×¢£¿?
+					temp=g_game.BlindsNum<<1;  //è‡³å°‘ä¸º2å€å°ç›²æ³¨ï¼Ÿ?
 				    break;	
 				 }			 
 			 }
 		 }	 
 	 }
-	 else if(g_game.players==2 && g_Seat==0)//AresÊÖÅÆÈ¦µÄ·¢»°Õß(2¸öÍæ¼Ò)
+	 else if(g_game.players==2 && g_Seat==0)//Aresæ‰‹ç‰Œåœˆçš„å‘è¯è€…(2ä¸ªç©å®¶)
 		 temp=g_game.AllPlayers[1].TotalPot-g_game.LastTotalPot[1];	
  }
  */
@@ -529,7 +535,7 @@ bool Set_FlopMsg(const VecStr& msg)
 	}
 	g_game.turn=Flop;
 	g_game.CardsNum+=3;
-	g_game.TurnBegin=1;//¿ªÊ¼½øÈë·­ÅÆÈ¦
+	g_game.TurnBegin=1;//å¼€å§‹è¿›å…¥ç¿»ç‰Œåœˆ
 	Ares->CurrTotal=0;
 	return true;
 	
@@ -544,7 +550,7 @@ bool Set_TurnMsg(const VecStr& msg)
 
 	 g_game.turn=Turn;
 	 g_game.CardsNum+=1;
-	 g_game.TurnBegin=1;//¿ªÊ¼½øÈë×ªÅÆÈ¦
+	 g_game.TurnBegin=1;//å¼€å§‹è¿›å…¥è½¬ç‰Œåœˆ
 	 Ares->CurrTotal=0;
 
 
@@ -560,41 +566,41 @@ bool Set_RiveMsg(const VecStr& msg)
 
 	g_game.turn=Rive;
 	g_game.CardsNum+=1;
-	g_game.TurnBegin=1;//¿ªÊ¼½øÈëºÓÅÆÈ¦
+	g_game.TurnBegin=1;//å¼€å§‹è¿›å…¥æ²³ç‰Œåœˆ
 	Ares->CurrTotal=0;
 
 	return true;
 }
 
-//Ì¯ÅÆÏûÏ¢
+//æ‘Šç‰Œæ¶ˆæ¯
 bool Set_ShowDownMsg(const VecStr& msg);
-//²Ê³Ø·ÖÅäÏûÏ¢
+//å½©æ± åˆ†é…æ¶ˆæ¯
 bool Set_PotWinMsg(const VecStr& msg)
 {
  if( msg[0]!="pot-win/" || *(msg.end()-1)!="/pot-win")
 			return false;
  int seat=GetSeatNum(atoi(msg[1].c_str()));
- g_game.AllPlayers[seat].jetton+=atoi(msg[2].c_str());//¸üĞÂÓ®¼ÒµÄ³ïÂë
- if(seat==g_Seat)   //¼ÇÂ¼AresÓ®ÅÆ¾ÖÊı
+ g_game.AllPlayers[seat].jetton+=atoi(msg[2].c_str());//æ›´æ–°èµ¢å®¶çš„ç­¹ç 
+ if(seat==g_Seat)   //è®°å½•Aresèµ¢ç‰Œå±€æ•°
 	 g_WinTimes++;
 
- //±¾¾ÖÓÎÏ·½áÊø  »Ö¸´³õÊ¼×´Ì¬
+ //æœ¬å±€æ¸¸æˆç»“æŸ  æ¢å¤åˆå§‹çŠ¶æ€
 // g_game.Inition();
  return true;
 }
-//±¾³¡ÓÎÏ·½áÊøÏûÏ¢
+//æœ¬åœºæ¸¸æˆç»“æŸæ¶ˆæ¯
 bool Set_GameOver(const VecStr& msg)
 {
 	 if(msg[0]!="game-over" )
 			return false;
 	 g_game.GameOver=true;
 
-//±¾¾ÖÓÎÏ·½áÊø  »Ö¸´³õÊ¼×´Ì¬
+//æœ¬å±€æ¸¸æˆç»“æŸ  æ¢å¤åˆå§‹çŠ¶æ€
  g_game.Inition();
 	 return true;
  
 }
-//Ïò·şÎñÆ÷×¢²áÏûÏ¢
+//å‘æœåŠ¡å™¨æ³¨å†Œæ¶ˆæ¯
 string Set_RegMsg(int id,char* Name)
 {
  string msg;
@@ -609,7 +615,7 @@ string Set_RegMsg(int id,char* Name)
  msg+=" \n";
  return msg;
 }
-//Õ½ÉñAres¾ö²ßÏûÏ¢   :player->server.   
+//æˆ˜ç¥Areså†³ç­–æ¶ˆæ¯   :player->server.   
 string Set_ActionMsg(int action,int raisenum)
 {
 	string msg;
@@ -647,7 +653,7 @@ string Set_ActionMsg(int action,int raisenum)
 	return msg;
 }
 
-//ÏûÏ¢´¦Àí½Ó¿Úº¯Êı(server -> player)
+//æ¶ˆæ¯å¤„ç†æ¥å£å‡½æ•°(server -> player)
 bool Set_Msg(const char* buf,int s)
 {
     bool temp;
