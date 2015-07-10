@@ -4,78 +4,78 @@
 #include <vector>
 #include <string>
 #include <iostream>
-//#include <sys/socket.h>
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 using namespace std;
 
 typedef vector<string> VecStr;
 
-//´æ·ÅÕûÌõÏûÏ¢
+//å­˜æ”¾æ•´æ¡æ¶ˆæ¯
 extern char* msgbuff;
-//´æ·Å½«ÕûÌõÏûÏ¢²ğ·ÖµÄ½á¹û
+//å­˜æ”¾å°†æ•´æ¡æ¶ˆæ¯æ‹†åˆ†çš„ç»“æœ
 extern VecStr g_MsgVec;
-//³õÊ¼Íæ¼ÒÊı
+//åˆå§‹ç©å®¶æ•°
 extern const  int g_PlayerNum;
-//ÅÆ¾Ö
+//ç‰Œå±€
 extern class Game g_game;
 
 /*****************************************************
-ÎÒÊÇÕ½ÉñAres
+æˆ‘æ˜¯æˆ˜ç¥Ares
 ********************************************************/
-//Õ½ÉñµÄpid
+//æˆ˜ç¥çš„pid
 extern int g_Pid;
-//Õ½ÉñµÄname
+//æˆ˜ç¥çš„name
 extern char* g_name;
-//Õ½ÉñµÄ×ùÎ»ºÅ
+//æˆ˜ç¥çš„åº§ä½å·
 extern int g_Seat;   
-//³õÊ¼³ïÂë
+//åˆå§‹ç­¹ç 
 extern const int  g_jetton;
-//³õÊ¼½ğ±Ò
+//åˆå§‹é‡‘å¸
 extern const int g_Money;
-//Õ½Éñ 
+//æˆ˜ç¥ 
 extern class Player* Ares; 
 
 
-//»¨É«
+//èŠ±è‰²
 enum Color{
-	NoColor=0,Spade=1,Heart,Club,Diamond  //ºÚ ºì Ã· ·½   NOColor±íÊ¾»¨É«Î´Öª
+	NoColor=0,Spade=1,Heart,Club,Diamond  //é»‘ çº¢ æ¢… æ–¹   NOColorè¡¨ç¤ºèŠ±è‰²æœªçŸ¥
 };
 
-//µãÊı    p0ÎªÄ¬ÈÏµãÊı£¬¼´µãÊıÎ´Öª
+//ç‚¹æ•°    p0ä¸ºé»˜è®¤ç‚¹æ•°ï¼Œå³ç‚¹æ•°æœªçŸ¥
 enum Point{
 	p0=0,p2=2,p3,p4,p5,p6,p7,p8,p9,p10,pJ,pQ,pK,pA
 };
 
-//Ò»ÕÅÅÆ
+//ä¸€å¼ ç‰Œ
 class Card{
 public:
 	Card():color(NoColor),point(p0){ }
 public:
-	int color;//»¨É«
-	int point;//µãÊı
+	int color;//èŠ±è‰²
+	int point;//ç‚¹æ•°
 };
 
-//¶¯×÷
+//åŠ¨ä½œ
 enum Action{
-	NoAction=0,Blind=1,Check,Call,Raise,AllIn,Fold //ÈÃÅÆ ¸ú×¢ ¼Ó×¢ È«Ñº ÆúÅÆ£¬NoAction±íÊ¾»¹Î´¾ö¶¨×´Ì¬
+	NoAction=0,Blind=1,Check,Call,Raise,AllIn,Fold //è®©ç‰Œ è·Ÿæ³¨ åŠ æ³¨ å…¨æŠ¼ å¼ƒç‰Œï¼ŒNoActionè¡¨ç¤ºè¿˜æœªå†³å®šçŠ¶æ€
 };
 
 
-//ÅÆĞÍ
+//ç‰Œå‹
 enum CardType{
-	ctHighCard=0,  //¸ßÅÆ 0
-		ctOnePair,      //Ò»¶Ô1 
-		ctTwoPair,	//Á½¶Ô 2 
-		ctThreeCard,    //ÈıÌõ 3 
-		ctStraight,	//Ë³×Ó 4
-		ctFlush,	//Í¬»¨  5
-		ctThreeTwo,	//Èı´ø¶ş  ºùÂ« 6
-		ctFourOne,	//ËÄ´øÒ»  ËÄÌõ 7
-		ctStraightFlush //Í¬»¨Ë³ 8
+	ctHighCard=0,  //é«˜ç‰Œ 0
+		ctOnePair,      //ä¸€å¯¹1 
+		ctTwoPair,	//ä¸¤å¯¹ 2 
+		ctThreeCard,    //ä¸‰æ¡ 3 
+		ctStraight,	//é¡ºå­ 4
+		ctFlush,	//åŒèŠ±  5
+		ctThreeTwo,	//ä¸‰å¸¦äºŒ  è‘«èŠ¦ 6
+		ctFourOne,	//å››å¸¦ä¸€  å››æ¡ 7
+		ctStraightFlush //åŒèŠ±é¡º 8
 };
 
-//ÅÆĞÍºÍÆäÖµ£¨ÈçKµÄÍ¬»¨Ë³)
+//ç‰Œå‹å’Œå…¶å€¼ï¼ˆå¦‚Kçš„åŒèŠ±é¡º)
 class CT_Value{
 public:
 	CT_Value():type(ctHighCard),value(){ }
@@ -84,72 +84,67 @@ public:
 	Card  value;
 };
 
-//·­ÅÆ  ×ªÅÆ  ºÓÅÆ
+//ç¿»ç‰Œ  è½¬ç‰Œ  æ²³ç‰Œ
 enum GameTurn{
-	PreHold=0,Hold=1,Flop,Turn,Rive   //PreHold±íÊ¾ÅÆ¾Ö»¹Î´¿ªÊ¼
+	PreHold=0,Hold=1,Flop,Turn,Rive   //PreHoldè¡¨ç¤ºç‰Œå±€è¿˜æœªå¼€å§‹
 };
 
-/*µ±Ç°ÅÆĞÍ(×î¸ß)£¨ÓÉµ×ÅÆ ºÍ ÒÑÓĞ¹«¹²ÅÆµÄµÃ³ö£©ÓĞ5 »ò6 »ò7 ÕÅÅÆ*/
+/*å½“å‰ç‰Œå‹(æœ€é«˜)ï¼ˆç”±åº•ç‰Œ å’Œ å·²æœ‰å…¬å…±ç‰Œçš„å¾—å‡ºï¼‰æœ‰5 æˆ–6 æˆ–7 å¼ ç‰Œ*/
 //extern CT_Value GetCT_Value(Card* cards,int num);
 
-//ÉùÃ÷Á½¸öÈ«¾Öº¯Êı
+//å£°æ˜ä¸¤ä¸ªå…¨å±€å‡½æ•°
 Card* GetPubCards();
 int GetCardsNum();
 
 
-//ÅÆÊÖ
+//ç‰Œæ‰‹
 class Player{
 public:
 	Player():pid(0),seat(-1),CurrPot(0),TotalPot(0),jetton(0),ReMoney(0),CurrAction(NoAction),
 		isContinue(true),CurrTotal(0){   }
-	
-	 CT_Value GetBestCTV(); //»ñÈ¡µ±Ç°×î¼ÑÅÆĞÍ	(5 6 7ÕÅÅÆ)
-	 void Inition();   //×´Ì¬³õÊ¼»¯
-	int GetSeat(){return seat;}					//»ñÈ¡×÷ÎªĞÅÏ¢
-	int GetTotalPot(){return TotalPot;}			//»ñÈ¡±¾¾ÖÀÛ¼ÆÒÑÍ¶×¢¶î
-	int Getjetton(){return jetton;}				//»ñÈ¡µ±Ç°²Ê³Ø×Ü¶î
-	int GetRemony(){return ReMoney;}			//»ñÈ¡Ê£Óà½ğ±ÒÊıÁ¿
-	Card* GetHoldCs(){return HoldCards;}		//»ñÈ¡ÊÖÅÆ
-	vector<int> GetActions(){return actions;}	//»ñÈ¡ÀúÊ·action¼ÇÂ¼
-	int GetCurrAction(){return CurrAction;}		//»ñÈ¡×î½üÒ»´Îaction
-	bool GetisContinue(){return isContinue;}	//»ñÈ¡ÅÆ¾ÖÊÇ·ñ»¹ÔÚ¼ÌĞø
+	 ~Player();
+	 CT_Value GetBestCTV(); //è·å–å½“å‰æœ€ä½³ç‰Œå‹	(5 6 7å¼ ç‰Œ)
+	 void Inition();   //çŠ¶æ€åˆå§‹åŒ–
+	int GetSeat(){return seat;}					//è·å–ä½œä¸ºä¿¡æ¯
+	int GetTotalPot(){return TotalPot;}			//è·å–æœ¬å±€ç´¯è®¡å·²æŠ•æ³¨é¢
+	int Getjetton(){return jetton;}				//è·å–å½“å‰å½©æ± æ€»é¢
+	int GetRemony(){return ReMoney;}			//è·å–å‰©ä½™é‡‘å¸æ•°é‡
+	Card* GetHoldCs(){return HoldCards;}		//è·å–æ‰‹ç‰Œ
+	vector<int> GetActions(){return actions;}	//è·å–å†å²actionè®°å½•
+	int GetCurrAction(){return CurrAction;}		//è·å–æœ€è¿‘ä¸€æ¬¡action
+	bool GetisContinue(){return isContinue;}	//è·å–ç‰Œå±€æ˜¯å¦è¿˜åœ¨ç»§ç»­
 
-	//²ßÂÔº¯Êı1
-	//²ßÂÔº¯Êı2
-	//²ßÂÔº¯Êı3
+	//ç­–ç•¥å‡½æ•°1
+	//ç­–ç•¥å‡½æ•°2
+	//ç­–ç•¥å‡½æ•°3
 
-public:
-	int pid;			//Íæ¼Ò±êÊ¶	
-	int seat;			//×ùÎ»±àºÅ£¨ÒÔ×¯¼ÒµÄÏà¶ÔÎ»ÖÃ£©
-	int CurrPot;		//µ±Ç°×îĞ¡ĞèÒªµÄÏÂ×¢¶î
-	int CurrTotal;      //ÓÃÓÚ¼ÇÂ¼Aresµ±Ç°·¢ÅÆÈ¦ÒÑ¾­Í¶ÈëµÄ×Ü¶î
-	int TotalPot;		//±¾¾ÖÀÛ¼ÆÒÑÍ¶×¢¶î
-	int jetton;			//ÊÖÖĞ³ïÂë
+private:
+	int pid;			//ç©å®¶æ ‡è¯†	
+	int seat;			//åº§ä½ç¼–å·ï¼ˆä»¥åº„å®¶çš„ç›¸å¯¹ä½ç½®ï¼‰
+	int CurrPot;		//å½“å‰æœ€å°éœ€è¦çš„ä¸‹æ³¨é¢
+	int CurrTotal;      //ç”¨äºè®°å½•Areså½“å‰å‘ç‰Œåœˆå·²ç»æŠ•å…¥çš„æ€»é¢
+	int TotalPot;		//æœ¬å±€ç´¯è®¡å·²æŠ•æ³¨é¢
+	int jetton;			//æ‰‹ä¸­ç­¹ç 
 
-	int ReMoney;		//Ê£Óà½ğ±ÒÊıÁ¿
-	Card HoldCards[2];	//ÊÖÅÆ
-	vector<int> actions;//±£´æÒÑ·¢ÉúµÄÃ¿Ò»´ÎµÄĞĞ¶¯¾ö²ß
-	int CurrAction;		//×î½ü£¨µ±Ç°£©Ò»´Îaction
-	bool isContinue;    //±ê¼ÇÍæ¼ÒÊÇ·ñÒÑÍË³ö³ÌĞò,Èç¹ûÒÑÍË³ö£¬Ôò²»ÔÙ¸üĞÂÆä³ÉÔ±ÏûÏ¢
-	CT_Value ctv;		//µ±Ç°×î¼ÑÅÆĞÍ
+	int ReMoney;		//å‰©ä½™é‡‘å¸æ•°é‡
+	Card HoldCards[2];	//æ‰‹ç‰Œ
+	vector<int> actions;//ä¿å­˜å·²å‘ç”Ÿçš„æ¯ä¸€æ¬¡çš„è¡ŒåŠ¨å†³ç­–
+	int CurrAction;		//æœ€è¿‘ï¼ˆå½“å‰ï¼‰ä¸€æ¬¡action
+	bool isContinue;    //æ ‡è®°ç©å®¶æ˜¯å¦å·²é€€å‡ºç¨‹åº,å¦‚æœå·²é€€å‡ºï¼Œåˆ™ä¸å†æ›´æ–°å…¶æˆå‘˜æ¶ˆæ¯
+	CT_Value ctv;		//å½“å‰æœ€ä½³ç‰Œå‹
 
 };
 
-//ÅÆ¾Ö
+//ç‰Œå±€
 class Game{
 public:
-	Game():players(0),players_alive(0),TotalMoney(0),turn(PreHold),RaisePlayer(0),
-		GameOver(false),FirstInq(0),JuShu(0),BlindsNum(0),TurnBegin(0){
-		AllPlayers=new Player[8];
-		for(int i=0;i<8;++i)
-			LastTotalPot[i]=0;
-	}
+	Game():players(0),players_alive(0),TotalMoney(0),turn(PreHold),RaisePla    yer(0),GameOver(false),FirstInq(0),JuShu(0),BlindsNum(0),TurnBegin(0);
 	~Game(){ 
 		delete[] PubCard;
 		delete[] AllPlayers;
 	}
 
-   void Inition();   //×´Ì¬³õÊ¼»¯
+      void Inition();   //çŠ¶æ€åˆå§‹åŒ–
 	Player* GetAllPlalyers(){return AllPlayers;}
 	Card* GetPubCards() {return PubCard;}
 	int GetPlayers(){return players;}
@@ -161,70 +156,69 @@ public:
 	int GetBlindNum(){return BlindsNum;}
 	int GetJuShu() {return JuShu;}
 
-public:
-	Player* AllPlayers;  //ËùÓĞÍæ¼Ò
-	static Card* PubCard;		//¹«¹²ÅÆ
-	int players;		//µ±Ç°¾ÖÍæ¼ÒÈËÊı
-    int players_alive;  //µ±Ç°Î´ÆúÅÆÍæ¼ÒÊı
-	int TotalMoney;		//µ±Ç°µ×³Ø×ÜÁ¿
-	int turn;			//µ±Ç°ÅÆ¾Ö½øÕ¹£¨Èç·­ÅÆÇ°  ·­ÅÆÈ¦ ×ªÅÆÈ¦ ºÓÅÆÈ¦£©
-	int RaisePlayer;    //µ±Ç°È¦¼Ó×¢ÈËÊı
-	static int CardsNum;		//µ×ÅÆ+ÒÑ·¢¹«¹²ÅÆÊıÁ¿
-	bool GameOver;		//±¾¾ÖÓÎÏ·½áÊø±êÖ¾
-	int BlindsNum;          //Ğ¡Ã¤×¢½ğ¶î
-	int FirstInq; 	//±ê¼ÇµÚÒ»ÌõÑ¯ÎÊÏûÏ¢
-	int JuShu;		//²Î¼Ó¹ıµÄ×Ü¾ÖÊı
-	int TurnBegin;		//±ê¼ÇÃ¿´Î·¢ÅÆºóµÄµÚÒ»È¦Ñ¯ÎÊµÄÆğµã
-	int LastTotalPot[8];//ÓÃÓÚ¹©Ares¼ÇÂ¼ÉÏÒ»´ÎÑ¯ÎÊÏûÏ¢Ìá¹©µÄËùÓĞÍæ¼Ò±¾¾ÖµÄ×ÜÍ¶×¢¶î
-	
+private:
+	Player* AllPlayers;  //æ‰€æœ‰ç©å®¶
+	static Card* PubCard;		//å…¬å…±ç‰Œ
+	int players;		//å½“å‰å±€ç©å®¶äººæ•°
+        int players_alive;  //å½“å‰æœªå¼ƒç‰Œç©å®¶æ•°
+	int TotalMoney;		//å½“å‰åº•æ± æ€»é‡
+	int turn;			//å½“å‰ç‰Œå±€è¿›å±•ï¼ˆå¦‚ç¿»ç‰Œå‰  ç¿»ç‰Œåœˆ è½¬ç‰Œåœˆ æ²³ç‰Œåœˆï¼‰
+	int RaisePlayer;    //å½“å‰åœˆåŠ æ³¨äººæ•°
+	static int CardsNum;		//åº•ç‰Œ+å·²å‘å…¬å…±ç‰Œæ•°é‡
+	bool GameOver;		//æœ¬å±€æ¸¸æˆç»“æŸæ ‡å¿—
+	int BlindsNum;          //å°ç›²æ³¨é‡‘é¢
+	int FirstInq; 	//æ ‡è®°ç¬¬ä¸€æ¡è¯¢é—®æ¶ˆæ¯
+	int JuShu;		//å‚åŠ è¿‡çš„æ€»å±€æ•°
+	int TurnBegin;		//æ ‡è®°æ¯æ¬¡å‘ç‰Œåçš„ç¬¬ä¸€åœˆè¯¢é—®çš„èµ·ç‚¹
+	int LastTotalPot[8];//ç”¨äºä¾›Aresè®°å½•ä¸Šä¸€æ¬¡è¯¢é—®æ¶ˆæ¯æä¾›çš„æ‰€æœ‰ç©å®¶æœ¬å±€çš„æ€»æŠ•æ³¨é¢	
 };
 
 
-//µ÷ÊÔÊä³öº¯Êı
+//è°ƒè¯•è¾“å‡ºå‡½æ•°
 void PrintPlayer(const Player& p);
 void PrintGame(const Game& g);
 /**********************************************
-È«¾Ö ÏûÏ¢ÉèÖÃº¯Êı
+å…¨å±€ æ¶ˆæ¯è®¾ç½®å‡½æ•°
 *********************************************/
-//½«ÏûÏ¢ÖĞµÄJ Q K A×ª»»Îª11 12  13 14
+//å°†æ¶ˆæ¯ä¸­çš„J Q K Aè½¬æ¢ä¸º11 12  13 14
  int StrToPoint(const string& c);
- //½«ÏûÏ¢ÖĞµÄ»¨É«×ª»»Îªcolor
+ //å°†æ¶ˆæ¯ä¸­çš„èŠ±è‰²è½¬æ¢ä¸ºcolor
  int StrToColor(const string& c);
- //½«action ×ª»»Îªint
+ //å°†action è½¬æ¢ä¸ºint
 int StrToAction(const string& c);
 
 
 int FindMaxPot(int beg,int end);
-//×Ö·û´®²ğ·Öº¯Êı£º½«s°´c²ğ·Ö£¬Ã¿¸ö×Ö¶Î´æµ½lstr_vec
+//å­—ç¬¦ä¸²æ‹†åˆ†å‡½æ•°ï¼šå°†sæŒ‰cæ‹†åˆ†ï¼Œæ¯ä¸ªå­—æ®µå­˜åˆ°lstr_vec
 void split(const string& s, char c, VecStr& Vec);
-//´«ÈëÏûÏ¢´®£¬½«Æä°´×Ö¶Î²ğ·Ö
+//ä¼ å…¥æ¶ˆæ¯ä¸²ï¼Œå°†å…¶æŒ‰å­—æ®µæ‹†åˆ†
 void SplitMsg(char* buffer, VecStr& msg);
-//ÉèÖÃ×øÎ»ĞÅÏ¢
+//è®¾ç½®åä½ä¿¡æ¯
 bool Set_SeatMsg(const VecStr& msg);
-//ÉèÖÃ´óĞ¡Ã¤×¢
+//è®¾ç½®å¤§å°ç›²æ³¨
 bool Set_BlindMsg(const VecStr& msg);
-//ÉèÖÃÊÖÅÆ
+//è®¾ç½®æ‰‹ç‰Œ
 bool Set_HoldCsMsg(const VecStr& msg);
-//ÉèÖÃÑ¯ÎÊÏûÏ¢
+//è®¾ç½®è¯¢é—®æ¶ˆæ¯
 bool Set_InquireMsg(const VecStr& msg);
-//ÉèÖÃ·­ÅÆ
+//è®¾ç½®ç¿»ç‰Œ
 bool Set_FlopMsg(const VecStr& msg);
-//ÉèÖÃ×ªÅÆ
+//è®¾ç½®è½¬ç‰Œ
 bool Set_TurnMsg(const VecStr& gmsg);
-//ÉèÖÃºÓÅÆ
+//è®¾ç½®æ²³ç‰Œ
 bool Set_RiveMsg(const VecStr& msg);
-//ÉèÖÃÌ¯ÅÆ½á¹û
+//è®¾ç½®æ‘Šç‰Œç»“æœ
 bool Set_ShowDownMsg(const VecStr& msg);
-//ÉèÖÃ²Ê³Ø·ÖÅä½á¹û
+//è®¾ç½®å½©æ± åˆ†é…ç»“æœ
 bool Set_PotWinMsg(const VecStr& msg);
-//ÉèÖÃgameover±êÖ¾
+//è®¾ç½®gameoveræ ‡å¿—
 bool Set_GameOver(const VecStr& msg);
-//ÉèÖÃactionÏûÏ¢£ºplayer->server
+//è®¾ç½®actionæ¶ˆæ¯ï¼šplayer->server
 string Set_ActionMsg(int action,int raisenum=0);
-//ÉèÖÃ×¢²áÏûÏ¢£ºpayer->server
+//è®¾ç½®æ³¨å†Œæ¶ˆæ¯ï¼špayer->server
 string Set_RegMsg(int id,char* Name);
 
-//ÏûÏ¢´¦Àíµ÷ÓÃ½Ó¿Úº¯Êı
+//æ¶ˆæ¯å¤„ç†è°ƒç”¨æ¥å£å‡½æ•°
 bool Set_Msg(const char *buf ,int socket);
 
 
